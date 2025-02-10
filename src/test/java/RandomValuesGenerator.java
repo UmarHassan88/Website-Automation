@@ -33,4 +33,12 @@ public class RandomValuesGenerator {
         String randomvalues = arr2[randarr];
         return randomvalues;
     }
+    public String RandomCoupencodes(){
+        String[] array = {"12jh##dsaj", "jdhasu7d##sg", "ab##5xa", "72183##7gj"};
+        Random rand = new Random();
+        int randint = rand.nextInt(array.length);
+        String arrayitems = array[randint];
+        String removespecial = arrayitems.replaceAll("#","");
+        return removespecial;
+    }
 }

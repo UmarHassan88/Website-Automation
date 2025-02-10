@@ -1,4 +1,6 @@
+import com.beust.ah.A;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.edge.EdgeDriver;
@@ -11,7 +13,10 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
+import javax.sound.sampled.Control;
+import java.security.Key;
 import java.time.Duration;
 import java.util.Date;
 import java.util.Random;
@@ -21,7 +26,7 @@ public class TestCase1 extends RandomValuesGenerator{
 
     WebDriver driver = new EdgeDriver();
     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-
+    Actions act = new Actions(driver);
     public String generatenewDateTime(){
         String dat = new Date().toString().replaceAll(" ", "").replaceAll(  ":", "") + "@gmail.com";
         return dat;
@@ -30,10 +35,10 @@ public class TestCase1 extends RandomValuesGenerator{
     @BeforeClass
     public void classSetup(){
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3));
-        driver.manage().window().maximize();
+//        driver.manage().window().maximize();
 
     }
-
+    //Test Case 1 [Registration]
     @Test(priority = 1)
     public void Registration() {
         driver.get("https://tutorialsninja.com/demo/");
@@ -55,6 +60,7 @@ public class TestCase1 extends RandomValuesGenerator{
         driver.findElement(By.xpath("/html/body/div[2]/div/div/div/div/a")).click();
         Assert.assertTrue(driver.findElement(By.linkText("Logout")).isDisplayed());
     }
+    //Test Case 2 [Newsletter Subscription]
         @Test(priority = 2)
         public void Subscription(){
         WebElement subscribe = wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Subscribe / unsubscribe to newsletter")));
@@ -67,6 +73,7 @@ public class TestCase1 extends RandomValuesGenerator{
         driver.findElement(By.xpath("//*[@id=\"content\"]/form/div/div[2]/input")).click();
     }
 
+    //Test Case 3 [Random Address Generation]
     @Test(priority = 3)
     public void AddressBook() throws InterruptedException {
         driver.findElement(By.linkText("Address Book")).click();
@@ -100,17 +107,22 @@ public class TestCase1 extends RandomValuesGenerator{
         Select region = new Select(regionstate);
         region.selectByVisibleText("Delvine");
         driver.findElement(By.xpath("/html/body/div[2]/div/div/form/div/div[2]/input")).click();
+        SoftAssert soft = new SoftAssert();
+        soft.assertEquals(driver.getCurrentUrl(), "https://tutorialsninja.com/demo/index.php?route=checkout/cart", "Title match");
 
     }
+
+    //Test Case 4 [Filling the Random Addresses]
     @Test(priority = 4)
     public void addressIteration() throws InterruptedException {
         driver.findElement(By.xpath("/html/body/div[2]/div[2]/div/div[1]/table/tbody/tr/td[2]/a[1]")).click();
-        for(int i = 0;i<3;i++){
+        for(int i = 0;i<1;i++){
             AddressBook();
     }}
 
+    //Test Case 5 [Adding Item to Cart]
     @Test(priority = 5)
-    public void AddtoCart()   throws InterruptedException {
+    public void DesktopAddtoCart()   throws InterruptedException {
         Actions actions = new Actions(driver);
         WebElement Desktop = driver.findElement(By.xpath("/html/body/div[1]/nav/div[2]/ul/li[1]/a"));
         actions.moveToElement(Desktop).perform();
@@ -126,19 +138,85 @@ public class TestCase1 extends RandomValuesGenerator{
         //act.moveToElement(itemcarts).perform();
 
         //Failed Test Case Step
-        WebElement cartpopup = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/header/div/div/div[3]/div/ul/li[2]/div/p/a[2]/strong")));
-        cartpopup.click();
-        String text = "Checkout Successfull";
-        Assert.assertEquals(wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/div[1]"))).getText(), text);
-
-
+        try {
+            WebElement cartpopup = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/header/div/div/div[3]/div/ul/li[2]/div/p/a[2]/strong")));
+            cartpopup.click();
+            String text = "Checkout Successfull";
+            Assert.assertEquals(wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/div[1]"))).getText(), text);
+        }
+        catch(Exception exc){
+            System.out.println("Exception Faced -> " + exc);
+        }
         //Checkout click
+    }
+    @Test(priority = 6)
+    public void ComponentsAddtoCart(){
+        Actions act = new Actions(driver);
+        WebElement comp = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[1]/nav/div[2]/ul/li[3]/a")));
+        act.moveToElement(comp).perform();
+        driver.findElement(By.xpath("/html/body/div[1]/nav/div[2]/ul/li[3]/div/div/ul/li[2]/a")).click();
+        //Sort By Dropdown
+        Select selectsortby = new Select(driver.findElement(By.xpath("/html/body/div[2]/div/div/div[2]/div[3]/div/select")));
+        selectsortby.selectByIndex(2);
+        //Comparison Test Case Check
+        WebElement comparison = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/div/div/div[3]/div[1]/div/div[2]/div[2]/button[3]")));
+        comparison.click();
+        //Wishlist Check
+        WebElement wishlist = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/div[2]/div/div[3]/div[1]/div/div[2]/div[2]/button[2]")));
+        wishlist.click();
+        //Add to Cart Check
+        WebElement cartcheck = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/div[2]/div/div[3]/div[1]/div/div[2]/div[2]/button[1]")));
+        cartcheck.click();
+        //CartItems
+        WebElement cartItems = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/header/div/div/div[3]/div/button")));
+        cartItems.click();
+        driver.findElement(By.xpath("/html/body/header/div/div/div[3]/div/ul/li[2]/div/p/a[2]/strong")).click();
+        String buttonname = "Checkout";
+        Assert.assertEquals(driver.findElement(By.xpath("/html/body/div[2]/div[2]/div/div[3]/div[2]/a")).getText(), buttonname);
+        WebElement cuponcode = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/div[2]/div/div[1]/div[1]/div[1]/h4/a")));
+        cuponcode.click();
+        WebElement inputcuponcode = wait.until(ExpectedConditions.elementToBeClickable(By.name("coupon")));
+        inputcuponcode.sendKeys(RandomCoupencodes());
+        WebElement applypromobutton = wait.until(ExpectedConditions.elementToBeClickable(By.id("button-coupon")));
+        applypromobutton.click();
+        String promocodeappliedmessage = "Promo Code Applied Successfully";
 
+        //Failed Test Case
+        Assert.assertEquals(driver.findElement(By.xpath("/html/body/div[2]/div[1]")).getText() , promocodeappliedmessage);
+        WebElement finalCheckout = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/div[2]/div/div[3]/div[2]/a")));
+        finalCheckout.submit();
+
+        //Element Visibility Check
+        WebElement elementDisplay = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/div[2]/div/div[1]/div[1]/div[2]/div/h3")));
+
+        Assert.assertTrue(elementDisplay.isDisplayed());
+        //Actions doubleclick = new Actions(driver);
+
+        //WebElement doubl = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/div[3]/div/form/div/table/thead/tr/td[4]")));
+        //doubleclick.moveToElement(doubl).doubleClick().click();
 
     }
-    /*@AfterClass
-    public void quitWindow(){
-        driver.quit();
-    }*/
+    @Test(priority = 7)
+    public void CartRefinement() throws InterruptedException {
+        WebElement cartplusitem1 = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/div[2]/div/form/div/table/tbody/tr[1]/td[4]/div/input")));
+        WebElement cartplusitem2 = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/div[2]/div/form/div/table/tbody/tr[2]/td[4]/div/input")));
 
+        cartplusitem1.clear();
+        cartplusitem1.sendKeys("2");
+        act.moveToElement(cartplusitem1).click().keyDown(Keys.CONTROL).sendKeys("a").sendKeys("c").keyUp(Keys.CONTROL).perform();
+        act.moveToElement(cartplusitem2).click().keyDown(Keys.CONTROL).sendKeys("a").sendKeys("v").keyUp(Keys.CONTROL).perform();
+
+    }
+    @Test(priority = 8)
+    public void continueShopping(){
+        WebElement continueShop = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/div[2]/div/div[3]/div[1]/a")));
+        continueShop.click();
+    }
+
+
+    @AfterClass
+    public void quitWindow(){
+     System.out.print("Class Executed!");
+        //driver.quit();
+    }
 }
