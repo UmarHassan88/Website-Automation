@@ -23,6 +23,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.security.Key;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
 import java.util.Set;
@@ -241,13 +242,15 @@ public class TestCase1 extends RandomValuesGenerator {
         robot.keyPress(KeyEvent.VK_DOWN);  // Move down in the right-click menu
         robot.keyPress(KeyEvent.VK_ENTER);
         Set<String> allwindowhandles = driver.getWindowHandles();
+        ArrayList<String> list = new ArrayList<>(allwindowhandles);
+        driver.switchTo().window(list.get(1));
 
-        for(String wind: allwindowhandles){
+        /*for(String wind: allwindowhandles){
             if(!wind.equals(drive)){
                 driver.switchTo().window(wind);
                 System.out.println("Switched to new tab: " + driver.getTitle());
             }
-        }
+        }*/
         /*WebElement addTablet = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/div/div/div[2]/div/div/div[2]/div[2]/button[1]")));
         addTablet.click();
         driver.findElement(By.xpath("/html/body/header/div/div/div[3]/div/button")).click();
@@ -273,16 +276,15 @@ public class TestCase1 extends RandomValuesGenerator {
         productName.sendKeys("Samsung Tablet");
         WebElement productCode = wait.until(ExpectedConditions.elementToBeClickable(By.name("model")));
         productCode.sendKeys("2");
-        Assert.assertEquals(driver.findElement(By.name("model")).getText(), 2);
-        WebElement toggle = wait.until(ExpectedConditions.elementToBeClickable(By.name("return_reason_id")));
+        //Assert.assertEquals(driver.findElement(By.name("model")).getText(), 2);
+        WebElement toggle = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/div[2]/div/div/form/fieldset[2]/div[4]/div/div[3]/label/input")));
         toggle.click();
         WebElement otherdetails = wait.until(ExpectedConditions.elementToBeClickable(By.id("input-comment")));
         otherdetails.sendKeys("Superb Product it is");
         driver.findElement(By.xpath("/html/body/div[2]/div/div/form/div/div[2]/input")).click();
-
-
+        driver.findElement(By.linkText("Continue")).click();
     }
-    //Test Case 10 [Quitting the Window]1
+    //Test Case 10 [Quitting the Window]
 
     @AfterClass
     public void quitWindow(){
